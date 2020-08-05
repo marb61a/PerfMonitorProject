@@ -1,5 +1,6 @@
-// Captures local perfformance data + sends to the socket.io server
+// Captures local performance data + sends to the socket.io server
 const os = require('os');
+const cpus = os.cpus();
 
 // What OS is being used
 const osType = os.type();
@@ -12,10 +13,35 @@ const freeMem = os.freemem();
 const totalMem = os.totalmem();
 
 const usedMem = totalMem - freeMem;
-const memUsage = Math.floor(usedMem / totalMem * 100);
+const memUsage = Math.floor(usedMem / totalMem * 100) / 100;
+
+// CPU information (Per core)
+const cpuModel = cpus[0].model;
+const cpuSpeed = cpus[0].speed;
+const numCores = cpus.length;
 
 console.log(osType);
 console.log(upTime);
 console.log(freeMem);
 console.log(totalMem);
 console.log(memUsage);
+console.log(cpuModel);
+console.log(cpuSpeed);
+console.log(numCores);
+
+// CPU covers all cores, getting the average of all cores
+// will give the CPU average
+function cpuAverage(){
+    // Get milliseconds in each mode (since reboot)
+    // get the number immediately and after 100ms to compare 
+    let idleMs = 0;
+    let totalMs = 0;
+
+    // Loop through each core
+    cpus.forEach((aCore) => {
+        // Loops through the each of the properties of the current core
+        for(type in aCore.times){
+            
+        }
+    });
+}
