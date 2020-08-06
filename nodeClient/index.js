@@ -32,6 +32,9 @@ console.log(numCores);
 // CPU covers all cores, getting the average of all cores
 // will give the CPU average
 function cpuAverage(){
+    // Needed in the method to refresh data each time method is called
+    const cpus = os.cpus();
+
     // Get milliseconds in each mode (since reboot)
     // get the number immediately and after 100ms to compare 
     let idleMs = 0;
@@ -41,7 +44,24 @@ function cpuAverage(){
     cpus.forEach((aCore) => {
         // Loops through the each of the properties of the current core
         for(type in aCore.times){
-            
+            // console.log(type);
+            totalMs += aCore.times[os.type];
+
+            idleMs =+ aCore.times.idle;
         }
     });
+
+    return{
+        idle: idleMs / cpus.length,
+        total: totalMs / cpus.length
+    }
+}
+
+function getCpuLoad(){
+    const start = cpuAverage();
+
+    setTimeout(() => {
+        const end = cpuAverage();
+
+    }, 100);
 }
