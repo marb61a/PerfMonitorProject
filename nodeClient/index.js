@@ -3,36 +3,33 @@ const os = require('os');
 const { resolve } = require('path');
 
 function performanceData() {
-    const cpus = os.cpus();
+    return new Promise(async(resolve, reject) => {
+        const cpus = os.cpus();
 
-    // What OS is being used
-    const osType = os.type();
+        // What OS is being used
+        const osType = os.type();
 
-    // How long the system has been up
-    const upTime = os.uptime();
+        // How long the system has been up
+        const upTime = os.uptime();
 
-    // How much memory is being used and is available on the system
-    const freeMem = os.freemem();
-    const totalMem = os.totalmem();
+        // How much memory is being used and is available on the system
+        const freeMem = os.freemem();
+        const totalMem = os.totalmem();
 
-    const usedMem = totalMem - freeMem;
-    const memUsage = Math.floor(usedMem / totalMem * 100) / 100;
+        const usedMem = totalMem - freeMem;
+        const memUsage = Math.floor(usedMem / totalMem * 100) / 100;
 
-    // CPU information (Per core)
-    const cpuModel = cpus[0].model;
-    const cpuSpeed = cpus[0].speed;
-    const numCores = cpus.length;
+        // CPU information (Per core)
+        const cpuModel = cpus[0].model;
+        const cpuSpeed = cpus[0].speed;
+        const numCores = cpus.length;
 
-    const cpuLoad = getCpuLoad();
+        const cpuLoad = await getCpuLoad();
+        resolve({
+            freeMem, totalMem, usedMem, memUsage, osType, upTime, cpuModel, numCores, cpuSpeed, cpuLoad
+        });
 
-    // console.log(osType);
-    // console.log(upTime);
-    // console.log(freeMem);
-    // console.log(totalMem);
-    // console.log(memUsage);
-    // console.log(cpuModel);
-    // console.log(cpuSpeed);
-    // console.log(numCores);
+    });
 }
 
 // CPU covers all cores, getting the average of all cores
@@ -51,7 +48,7 @@ function cpuAverage(){
         // Loops through the each of the properties of the current core
         for(type in aCore.times){
             // console.log(type);
-            totalMs += aCore.times[os.type];
+            totalMs += aCore.times[type];
 
             idleMs =+ aCore.times.idle;
         }
@@ -75,9 +72,13 @@ function getCpuLoad(){
             const totalDifference = end.total - start.total;
 
             // Calculate the % of used CPU
-            const percentCpu = 100 - Math.floor(100 * idleDifference / totalDifference);
-            resolve(percentCpu);
+            const percentageCpu = 100 - Math.floor(100 * idleDifference / totalDifference);
+            resolve(percentageCpu);
         }, 100);
     })
     
 }
+
+performanceData().then((allPerformanceData) => {
+    console.log(allPerformanceData);
+});
