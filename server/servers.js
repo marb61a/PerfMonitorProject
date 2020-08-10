@@ -29,4 +29,33 @@ if(cluster.isMaster){
 			spawn(i);
 		});
     }
+
+    // Spawn workers
+    for(var i = 0; i < num_processes; i++){
+        spawn(i);
+    }
+
+    // A helper function for getting a worker index based on an IP address
+    // It works by converting the IP address to a number and compressing to the number of slots available
+    const worker_index = function(ip, len){
+        // Farmhash is very quickand also works with IPv6
+        return farmhash.fingerprint32(ip) % len;
+    }
+
+    // Starting a TCP connection with the net module instead of the http module
+    // There needs to be an independent port open for cluster to work. This is 
+    // the internet facing port
+    const server = net.createServer({pauseOnConnect: true}, (connection) => {
+        // Connection has been recieved and must be passed to the appropriate worker
+        // Get the worker for the connection's source IP and pass the connection
+        let worker = workers[worker_index(connection.remoteAddress, num_processes)];
+		worker.send('sticky-session:connection', connection);
+    });
+
+    server.listen(port);
+    console.log(`Master listening on port ${port}`);
+} else {
+    // No need to listen for a port here as the master does it
+    let app = express();
+    
 }
