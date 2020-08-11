@@ -1,6 +1,25 @@
 // Captures local performance data + sends to the socket.io server
 const os = require('os');
-const { resolve } = require('path');
+const io = require('socket.io-client');
+// Will request a connection to the socket io server
+let socket = io('http://127.0.0.1:8181');
+
+socket.on('connect', () => {
+    // console.log('Connected to socket server');
+    
+    // Need to id this machine to whomever is concerned
+    const nI = os.networkInterfaces();
+    let macA;
+
+    // Loop through all network interaces and find a non internal one
+    for(let key in nI){
+        if(!nI[key][0].internal){
+            macA = nI[key][0].mac;
+            break;
+        }
+    }
+
+});
 
 function performanceData() {
     return new Promise(async(resolve, reject) => {
