@@ -1,3 +1,8 @@
+const mongoose = require('mongoose');
+mongoose.connect('127.0.0.1/perfData', {
+    useNewUrlParser: true
+});
+
 function socketMain(io, socket){
     // console.log('A socket connected ', socket.id);
     socket.on('perfData', (key) => {
@@ -7,6 +12,9 @@ function socketMain(io, socket){
         } else if (key = 'lkjhgf765432'){
             // Valid UI client has joined
             socket.join('ui')
+        } else {
+            // An invalid client has joined, immediately remove
+            socket.disconnect(true);
         }
     });
 
