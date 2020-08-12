@@ -11,7 +11,8 @@ socket.on('connect', () => {
     const nI = os.networkInterfaces();
     let macA;
 
-    // Loop through all network interaces and find a non internal one
+    // Loop through all network interfaces and find a non internal one
+    // There will be at least 1 if the computer is to connect to the internet
     for(let key in nI){
         if(!nI[key][0].internal){
             macA = nI[key][0].mac;
@@ -19,6 +20,17 @@ socket.on('connect', () => {
         }
     }
 
+    // Client authentication with single key value
+    socket.emit('clientAuth', 'abcdefg1234567');
+
+    // Start sending over data on interval
+    let perfDataInterval = setInterval(() => {
+        performanceData().then((allPerformanceData) => {
+            // console.log(allPerformanceData);
+            socket.emit('perfData', allPerformanceData);
+        });
+        
+    }, 1000);
 });
 
 function performanceData() {
@@ -97,7 +109,3 @@ function getCpuLoad(){
     })
     
 }
-
-performanceData().then((allPerformanceData) => {
-    console.log(allPerformanceData);
-});
