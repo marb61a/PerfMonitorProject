@@ -5,6 +5,8 @@ mongoose.connect('127.0.0.1/perfData', {
 const Machine = require('./models/Machine');
 
 function socketMain(io, socket){
+    let macA;
+
     // console.log('A socket connected ', socket.id);
     socket.on('perfData', (key) => {
         if(key === 'abcdefg1234567'){
@@ -19,8 +21,24 @@ function socketMain(io, socket){
         }
     });
 
+    socket.on('initPerfData', (data) => {
+        // console.log(data);
+        // Updates the socket connect function scoped variable
+        macA = data.macA;
+
+        // Check mongo
+        checkAndAdd(data);
+    });
+
     socket.on('perfData', (data) => {
         console.log(data);
+    });
+}
+
+function checkAndAdd(data){
+    // JS will not wait for the db so function needs to be a promise
+    return new Promise((resolve, reject) => {
+
     });
 }
 
